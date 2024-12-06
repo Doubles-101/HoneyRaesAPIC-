@@ -1,3 +1,9 @@
+using HoneyRaesAPI.Models;
+using HoneyRaesAPI.Models.DTOs;
+List<Customer> customers = new List<Customer> { };
+List<Employee> employees = new List<Employee> { };
+List<ServiceTicket> serviceTickets = new List<ServiceTicket> { };
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,25 +22,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/servicetickets", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    return serviceTickets.Select(t => new ServiceTicketDTO
+    {
+        Id = t.Id,
+        CustomerId = t.CustomerId,
+        EmployeeId = t.EmployeeId,
+        Description = t.Description,
+        Emergency = t.Emergency,
+        DateCompleted = t.DateCompleted
+    });
+});
 
 app.MapGet("/hello", () =>
 {
@@ -42,8 +42,3 @@ app.MapGet("/hello", () =>
 });
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
